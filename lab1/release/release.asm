@@ -1,20 +1,16 @@
-%include "io64.inc"
 
-section .data
+bits 64
+segment .data ; a.k.a DS - Data Segment
     SOURCE: db  10, 20, 30, 40
-section .bss
+segment .bss
     DEST:   resb    4
-section .text
-global CMAIN
-CMAIN:
+segment .text ; a.k.a CS - Code Segment
+global _start
+_start:
     mov rbp, rsp; for correct debugging
+    
     xor rax, rax
-    push rax
-    call Transfering
-    pop rax
-    ret
-   
-Transfering: ;transfering values from SOURCE TO DEST
+
     mov byte [DEST], 0
     mov byte [DEST + 1], 0
     mov byte [DEST + 2], 0
@@ -32,5 +28,6 @@ Transfering: ;transfering values from SOURCE TO DEST
     mov al, byte [SOURCE + 3]
     mov byte [DEST], al
 
-    ret
-    
+    mov rax, 60                 ; system call for exit
+    xor rdi, rdi                ; exit code 0
+    syscall                
