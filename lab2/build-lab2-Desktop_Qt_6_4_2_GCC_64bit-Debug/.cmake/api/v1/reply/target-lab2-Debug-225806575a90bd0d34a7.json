@@ -1,0 +1,117 @@
+{
+	"artifacts" : 
+	[
+		{
+			"path" : "lab2"
+		}
+	],
+	"backtrace" : 1,
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"add_executable"
+		],
+		"files" : 
+		[
+			"CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 15,
+				"parent" : 0
+			}
+		]
+	},
+	"compileGroups" : 
+	[
+		{
+			"compileCommandFragments" : 
+			[
+				{
+					"fragment" : "-g"
+				}
+			],
+			"language" : "C",
+			"sourceIndexes" : 
+			[
+				0
+			]
+		},
+		{
+			"compileCommandFragments" : 
+			[
+				{
+					"fragment" : "-g -F dwarf"
+				}
+			],
+			"language" : "ASM_NASM",
+			"sourceIndexes" : 
+			[
+				1
+			]
+		}
+	],
+	"id" : "lab2::@6890427a1f51a3e7e1df",
+	"link" : 
+	{
+		"commandFragments" : 
+		[
+			{
+				"fragment" : "-g",
+				"role" : "flags"
+			},
+			{
+				"fragment" : "",
+				"role" : "flags"
+			}
+		],
+		"language" : "C"
+	},
+	"name" : "lab2",
+	"nameOnDisk" : "lab2",
+	"paths" : 
+	{
+		"build" : ".",
+		"source" : "."
+	},
+	"sourceGroups" : 
+	[
+		{
+			"name" : "Source Files",
+			"sourceIndexes" : 
+			[
+				0
+			]
+		},
+		{
+			"name" : "",
+			"sourceIndexes" : 
+			[
+				1
+			]
+		}
+	],
+	"sources" : 
+	[
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "main.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "lab.asm",
+			"sourceGroupIndex" : 1
+		}
+	],
+	"type" : "EXECUTABLE"
+}

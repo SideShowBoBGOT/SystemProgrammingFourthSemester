@@ -17,3 +17,5 @@ nasm -felf64 -l release/release.lst release/release.asm
 
 # 4) злінкувати об'єктні файли та створити .map-файл
 ld -M -o release/release.out release/release.o > release/release.map
+
+

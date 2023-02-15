@@ -1,13 +1,16 @@
-
 bits 64
 segment .data ; a.k.a DS - Data Segment
     SOURCE: db  10, 20, 30, 40
+    number: dq 999
 segment .bss
     DEST:   resb    4
 segment .text ; a.k.a CS - Code Segment
 global _start
 _start:
     mov rbp, rsp; for correct debugging
+    
+    
+    push qword [number]
     
     xor rax, rax
 
