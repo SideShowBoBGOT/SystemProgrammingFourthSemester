@@ -21,6 +21,7 @@ BUFFER_LENGTH   equ 5
 
 section .data
 error_incorrect_symbol:                         db  "Incorrect symbol in input", 0
+error_incorrect_symbol_length:                  db  $-error_incorrect_symbol
 buffer:                     times BUFFER_LENGTH db  0
 inputtedLength:                                 dq  0
 
@@ -48,8 +49,30 @@ asm_main:
 ;<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 ;<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 WriteToConsole:
+;   Function writing string into STDOUT
+;   void WriteToConsole(char* buffer, int bufferLength)
+;   Params:
+;       rax:    char*   buffer
+;       rdi:    int     bufferLength
+;   Returns:
+;       void
+push rax
+push rdi
+push rsi
+push rdx
 
+mov rsi, rax
+mov rdx, rdi
+mov rax, SYS_WRITE
+mov rdi, STDOUT
 
+call DoSystemCallNoModify
+
+pop rdx
+pop rsi
+pop rdi
+pop rax
+ret
 ;<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 ;<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 ReadIntoBuffer:
@@ -175,6 +198,18 @@ TryConvertStringToInteger:
         jp .NoError
     .ErrorIncorrectSymbol
         ;   print error message
+        mov r8, 0
+
+        push rax
+        push rdi
+
+        mov rax, error_incorrect_symbol
+        mov rdi, error_incorrect_symbol_length
+        call WriteToConsole
+
+        pop rdi
+        pop rax
+
         jmp .End
     .NoError:
         mov r8, 1
