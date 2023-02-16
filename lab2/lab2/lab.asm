@@ -40,6 +40,7 @@ asm_main:
     call ReadIntoBuffer
     mov rsi, [rsi]
     call TryConvertStringToInteger
+    mov rdx, qword [rdx]
 
     pop rdx
     pop rsi
@@ -146,16 +147,24 @@ TryConvertStringToInteger:
 ;
     push rbx
     push rcx
+    push r9
 
-    xor rcx, rcx
+    xor r9, r9
+    mov qword [rdx], 0
+    mov rcx, rsi
     xor rbx, rbx
     xor r8, r8
 
-    ; if inputtedLength > bufferLength
-    cmp rsi, rdi
+    dec rcx
+    cmp byte [rax + rcx], NEW_LINE_CHARACTER
+    jne .loop
+    dec rcx
 
     .loop:
-        mov bl, byte [rax + rcx]
+        cmp rcx, 0
+        jl .NoError
+
+        mov bl, byte [rax + r9]
 
         .IsNewLineCharacter:
             cmp bl, NEW_LINE_CHARACTER
@@ -165,6 +174,7 @@ TryConvertStringToInteger:
             push rax
             push rdi
 
+            xor rax, rax
             mov al, bl
             call IsDigit
             mov r8, rdi
@@ -186,16 +196,17 @@ TryConvertStringToInteger:
             call Pow
 
             imul rsi, rbx
-            add qword [rdx], rsi
+            mov rdi, qword [rdx]
+            add rdi, rsi
+            mov qword [rdx], rdi
 
             pop rsi
             pop rdi
             pop rax
         ;   whole_digit = digit*(10^counter)
-        inc rcx
-        cmp rcx, rsi
-        jl .loop
-        jp .NoError
+        dec rcx
+        inc r9
+        jmp .loop
     .ErrorIncorrectSymbol
         ;   print error message
         mov r8, 0
@@ -216,6 +227,7 @@ TryConvertStringToInteger:
         jmp .End
     .End:
 
+    pop r9
     pop rcx
     pop rbx
 
@@ -232,8 +244,9 @@ IsDigit:
 ;       rdi:    bool    if true, then it is digit, else not
     cmp al, DIGIT_ZERO
     jl .False
+    mov r11, DIGIT_NINE
     cmp al, DIGIT_NINE
-    jb .False
+    jg .False
     jmp .True
     .False:
         mov rdi, 0
@@ -258,11 +271,14 @@ mov rsi, 1
 xor rcx, rcx
 
 .loop:
+    cmp rcx, rdi
+    jge .End
+
     imul rsi, rax
     inc rcx
-    cmp rcx, rdi
-    jl .loop
 
+    jmp .loop
+.End:
 pop rcx
 ret
 
