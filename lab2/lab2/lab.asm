@@ -26,6 +26,8 @@ inputtedLength:                                 dq  0
 
 section .text
 global asm_main
+;<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+;<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 asm_main:
     push rax
     push rdi
@@ -43,8 +45,13 @@ asm_main:
     pop rdi
     pop rax
     ret
-; void read()
-; moves input to buffer variable
+;<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+;<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+WriteToConsole:
+
+
+;<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+;<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 ReadIntoBuffer:
 ;   Function reading string into buffer;
 ;   void ReadIntoBuffer(char* buffer, int bufferLength, int* inputtedLength);
@@ -82,6 +89,8 @@ ReadIntoBuffer:
     pop rdi
     pop rax
     ret
+;<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+;<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 DoSystemCallNoModify:
 ;   Function doing system call without
 ;   modifying rcx and r11 registers after the call.
@@ -99,6 +108,8 @@ DoSystemCallNoModify:
     pop r11
     pop rcx
     ret
+;<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+;<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 TryConvertStringToInteger:
 ;   Function converting string to integer;
 ;   bool ReadIntoBuffer(char* buffer, int bufferLength, int inputtedLength, int* number);
@@ -114,31 +125,68 @@ TryConvertStringToInteger:
     push rcx
 
     xor rcx, rcx
+    xor rbx, rbx
+    xor r8, r8
+
     ; if inputtedLength > bufferLength
     cmp rsi, rdi
-    je .A2
-    .A1:
-        .A1B1Loop:
 
-        jl .A1B1Loop
-        jp .End
-    .A2:
-        .A2B1Loop:
+    .loop:
+        mov bl, byte [rax + rcx]
 
-        jl .A2B1Loop
-        jp .End
+        .IsNewLineCharacter:
+            cmp bl, NEW_LINE_CHARACTER
+            je .NoError
+
+        .CallIsDigit
+            push rax
+            push rdi
+
+            mov al, bl
+            call IsDigit
+            mov r8, rdi
+
+            pop rdi
+            pop rax
+
+        cmp r8, 0
+        je .ErrorIncorrectSymbol
+        sub bl, DIGIT_ZERO
+
+        .CallPow
+            push rax
+            push rdi
+            push rsi
+
+            mov rax, 10
+            mov rdi, rcx
+            call Pow
+
+            imul rsi, rbx
+            add qword [rdx], rsi
+
+            pop rsi
+            pop rdi
+            pop rax
+        ;   whole_digit = digit*(10^counter)
+        inc rcx
+        cmp rcx, rsi
+        jl .loop
+        jp .NoError
     .ErrorIncorrectSymbol
-        mov r8, 0
+        ;   print error message
         jmp .End
-
     .NoError:
         mov r8, 1
         jmp .End
     .End:
+
     pop rcx
     pop rbx
 
     ret
+;<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+;<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 IsDigit:
 ;   Function checking whether byte value
 ;   is in digit codes range
@@ -147,9 +195,9 @@ IsDigit:
 ;       rax:    char    c
 ;   Returns:
 ;       rdi:    bool    if true, then it is digit, else not
-    cmp rax, DIGIT_ZERO
+    cmp al, DIGIT_ZERO
     jl .False
-    cmp rax, DIGIT_NINE
+    cmp al, DIGIT_NINE
     jb .False
     jmp .True
     .False:
@@ -160,6 +208,38 @@ IsDigit:
         jmp .End
     .End:
     ret
+;<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+;<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+Pow:
+;   Function powing number to a certain degree.
+;   Params:
+;       rax:    int number
+;       rdi:    int degree
+;   Returns:
+;       rsi:    Powed number
+push rcx
+
+mov rsi, 1
+xor rcx, rcx
+
+.loop:
+    imul rsi, rax
+    inc rcx
+    cmp rcx, rdi
+    jl .loop
+
+pop rcx
+ret
+
+
+
+
+
+
+
+
+
+
 
 
 
