@@ -23,10 +23,10 @@ BUFFER_LENGTH   equ 5
 
 section .data
 ;   Errors
-error_incorrect_symbol:                         db  "Incorrect symbol in input", 0
-error_incorrect_symbol_length:                  db  $-error_incorrect_symbol
-error_sign_character_not_first                  db  "Sign characters must be first", 0
-error_sign_character_not_first_length           db  $-error_sign_character_not_first
+error_incorrect_symbol:                         db  "Incorrect symbol in input", NEW_LINE_CHARACTER, 0
+error_incorrect_symbol_length:                  equ $-error_incorrect_symbol
+error_sign_character_not_first                  db  "Sign characters must be first", NEW_LINE_CHARACTER, 0
+error_sign_character_not_first_length           equ $-error_sign_character_not_first
 ;   Buffers
 buffer:                     times BUFFER_LENGTH db  0
 inputtedLength:                                 dq  0
@@ -40,18 +40,166 @@ asm_main:
     push rdi
     push rsi
     push rdx
+    push r8
 
     mov rax, buffer
     mov rdi, BUFFER_LENGTH
     call ReadIntoBuffer
     mov rsi, [rsi]
     call TryConvertStringToInteger
+    cmp r8, 0
+    je .End
     mov rdx, qword [rdx]
+    add rdx, 6
 
-    pop rdx
-    pop rsi
-    pop rdi
-    pop rax
+    call ClearBuffer
+    call TryConvertNumberToString
+    mov rdi, rsi
+    call WriteToConsole
+    call PrintEndl
+    .End:
+        pop r8
+        pop rdx
+        pop rsi
+        pop rdi
+        pop rax
+        ret
+PrintEndl:
+;   Function printing enl
+;   void PrintEndl(char* const buffer);
+;   Params:
+;       rax:    char*   buffer
+;   Returns:
+;       void
+push rdi
+push rbx
+mov bl, byte [rax]
+
+mov byte [rax], NEW_LINE_CHARACTER
+mov rdi, 1
+
+call WriteToConsole
+
+mov byte [rax], bl
+pop rbx
+pop rdi
+ret
+ClearBuffer:
+;   Function clearing buffer
+;   void ClearBuffer(char* buffer, int length);
+;   Params:
+;       rax:    char*   buffer
+;       rdi:    int     length
+;   Returns:
+;       void
+push rcx
+xor rcx, rcx
+
+.loop:
+    cmp rcx, rdi
+    jbe .End
+    mov byte [rax + rcx], 0
+    jmp .loop
+.End:
+pop rcx
+ret
+;<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+;<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+TryConvertNumberToString:
+;      Function converting integer to string;
+;      bool TryConvertNumberToString(char* buffer, int bufferLength, int inputtedLength, int number);
+;      Params:
+;          rax:    char*   buffer
+;          rdi:    int     bufferLength
+;          rsi:    int&    inputtedLength
+;          rdx:    int     number
+;      Returns:
+;           r8:    bool    if true, no error, else throwed error
+;
+    pushf
+    push rbx
+    push rcx
+    push r8
+    push r9
+
+    xor r9, r9
+    xor r8, r8
+    ;   counter = 0
+    mov rcx, 0
+    cmp rdx, 0
+    jge .ReadingNumbersIntoStack
+
+    .CheckForNegative:
+        mov r9, 1
+        neg rdx
+        mov byte [rax], MINUS_SIGN
+
+    .ReadingNumbersIntoStack:
+;   The idea behind this is to read number into stack
+;   For example, 123 into stack like "3","2","1"
+;   and we counted digits. In this, example count = 3
+;   so we need to do smth like that:
+;   while(index<count) {
+;       pop stack into var
+;       var = var + ZERO_CODE
+;       *buffer[index] = var
+;       ++index
+;   }
+;       copy value to rbx
+        mov rbx, rdx
+        .loop:
+            cmp rbx, 0
+            jle .ReadingNumbersFromStackToBuffer
+
+            .ReadDigit:
+                push rax
+                push rdx
+
+;               rax_rbx_copy = rbx;
+                mov rax, rbx
+;               rdx = 0; rbx = 10
+                xor rdx, rdx
+                mov rbx, 10
+;               rax_rbx_copy, rdx_remaindex = rax_rbx_copy / rbx
+                idiv rbx
+;               r8 = rdx_remainder; rbx = rax_rbx_copy
+                mov r8, rdx
+                mov rbx, rax
+
+                pop rdx
+                pop rax
+            push r8
+            inc rcx
+            jmp .loop
+
+    .ReadingNumbersFromStackToBuffer:
+
+        xor rbx, rbx
+        xor r8, r8
+        cmp r9, 0
+        je .Preparation
+        .IncrementIfNegative:
+            inc r8
+            inc rcx
+        .Preparation:
+         mov rsi, rcx
+        .loop2:
+            cmp r8, rcx
+            jge .NoError
+
+            pop rbx
+            add rbx, DIGIT_ZERO
+            mov [rax + r8], bl
+
+            inc r8
+            jmp .loop2
+    .NoError:
+
+    pop r9
+    pop r8
+    pop rcx
+    pop rbx
+    popf
     ret
 ;<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 ;<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -144,7 +292,7 @@ DoSystemCallNoModify:
 ;<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 TryConvertStringToInteger:
 ;   Function converting string to integer;
-;   bool ReadIntoBuffer(char* buffer, int bufferLength, int inputtedLength, int* number);
+;   bool TryConvertStringToInteger(char* buffer, int bufferLength, int inputtedLength, int* number);
 ;   Params:
 ;       rax:    char*   buffer
 ;       rdi:    int     bufferLength
