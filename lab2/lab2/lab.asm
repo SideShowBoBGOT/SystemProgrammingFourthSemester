@@ -12,6 +12,8 @@ STDOUT  equ 1
 ;   ASCII characters
 NULL_TERMINATOR     equ 0
 NEW_LINE_CHARACTER  equ 10
+PLUS_SIGH           equ 43
+MINUS_SIGN          equ 45
 DIGIT_ZERO          equ 48
 DIGIT_NINE          equ 57
 
@@ -20,8 +22,12 @@ BUFFER_LENGTH   equ 5
 
 
 section .data
+;   Errors
 error_incorrect_symbol:                         db  "Incorrect symbol in input", 0
 error_incorrect_symbol_length:                  db  $-error_incorrect_symbol
+error_sign_character_not_first                  db  "Sign characters must be first", 0
+error_sign_character_not_first_length           db  $-error_sign_character_not_first
+;   Buffers
 buffer:                     times BUFFER_LENGTH db  0
 inputtedLength:                                 dq  0
 
@@ -126,11 +132,13 @@ DoSystemCallNoModify:
 ;   https://stackoverflow.com/questions/47983371/why-do-x86-64-linux-system-calls-modify-rcx-and-what-does-the-value-mean
 ;   http://www.int80h.org/bsdasm/#system-calls
 ;   https://docs.freebsd.org/en/books/developers-handbook/x86/#x86-system-calls
+    pushf
     push rcx
     push r11
     syscall
     pop r11
     pop rcx
+    popf
     ret
 ;<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 ;<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -145,10 +153,13 @@ TryConvertStringToInteger:
 ;   Returns:
 ;        r8:    bool    if true, no error, else throwed error
 ;
+    pushf
     push rbx
     push rcx
     push r9
+    push r10
 
+    xor r10, r10
     xor r9, r9
     mov qword [rdx], 0
     mov rcx, rsi
@@ -166,9 +177,39 @@ TryConvertStringToInteger:
 
         mov bl, byte [rax + r9]
 
+;       if(IsNeLineCharacter()) {
+;            break;
+;       }
         .IsNewLineCharacter:
             cmp bl, NEW_LINE_CHARACTER
             je .NoError
+
+;       if(sign=='-' || sign=='+') {
+;           if(index!=0) {
+;               return Error;
+;           }
+;           if(sign=='-') {
+;               *number *= -1;
+;           }
+;
+;           --rcx;
+;           ++r9;
+;           continue;
+;       }
+        .CheckForSigns:
+            .IsPlusCharacter:
+                cmp bl, PLUS_SIGH
+                je .CheckForSignBeingFirst
+            .IsMinusCharacter:
+                cmp bl, MINUS_SIGN
+                je .OnEqualMinus
+            jmp .CallIsDigit
+            .OnEqualMinus:
+                mov r10, 1
+            .CheckForSignBeingFirst:
+                cmp r9, 0
+                jne .ErrorSignNotFirst
+            jmp .OnIterationEnd
 
         .CallIsDigit
             push rax
@@ -204,9 +245,24 @@ TryConvertStringToInteger:
             pop rdi
             pop rax
         ;   whole_digit = digit*(10^counter)
+        .OnIterationEnd:
         dec rcx
         inc r9
         jmp .loop
+    .ErrorSignNotFirst:
+        mov r8, 0
+
+        push rax
+        push rdi
+
+        mov rax, error_sign_character_not_first
+        mov rdi, error_sign_character_not_first_length
+        call WriteToConsole
+
+        pop rdi
+        pop rax
+
+        jmp .End
     .ErrorIncorrectSymbol
         ;   print error message
         mov r8, 0
@@ -223,14 +279,25 @@ TryConvertStringToInteger:
 
         jmp .End
     .NoError:
-        mov r8, 1
-        jmp .End
+        cmp r10, 1
+        jne .GeneralNoError
+        push rax
+
+        mov rax, qword [rdx]
+        neg rax
+        mov qword [rdx], rax
+
+        pop rax
+        .GeneralNoError:
+            mov r8, 1
+            jmp .End
     .End:
 
+    pop r10
     pop r9
     pop rcx
     pop rbx
-
+    popf
     ret
 ;<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 ;<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -242,9 +309,9 @@ IsDigit:
 ;       rax:    char    c
 ;   Returns:
 ;       rdi:    bool    if true, then it is digit, else not
+    pushf
     cmp al, DIGIT_ZERO
     jl .False
-    mov r11, DIGIT_NINE
     cmp al, DIGIT_NINE
     jg .False
     jmp .True
@@ -255,6 +322,7 @@ IsDigit:
         mov rdi, 1
         jmp .End
     .End:
+    popf
     ret
 ;<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 ;<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -265,6 +333,7 @@ Pow:
 ;       rdi:    int degree
 ;   Returns:
 ;       rsi:    Powed number
+pushf
 push rcx
 
 mov rsi, 1
@@ -280,6 +349,7 @@ xor rcx, rcx
     jmp .loop
 .End:
 pop rcx
+popf
 ret
 
 
