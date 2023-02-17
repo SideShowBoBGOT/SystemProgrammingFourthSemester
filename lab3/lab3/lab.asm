@@ -27,6 +27,9 @@ error_incorrect_symbol:                         db  "Incorrect symbol in input",
 error_incorrect_symbol_length:                  equ $-error_incorrect_symbol
 error_sign_character_not_first                  db  "Sign characters must be first", NEW_LINE_CHARACTER, 0
 error_sign_character_not_first_length           equ $-error_sign_character_not_first
+input_a_msg:                                    db  "Input a: ", 0
+input_b_msg:                                    db  "Input b: ", 0
+input_x_msg:                                    db  "Input x: ", 0
 ;   Buffers
 buffer:                     times BUFFER_LENGTH db  0
 inputtedLength:                                 dq  0
@@ -41,23 +44,63 @@ asm_main:
     push rsi
     push rdx
     push r8
+    push r9
+
+
 
     mov rax, buffer
     mov rdi, BUFFER_LENGTH
-    call ReadIntoBuffer
-    mov rsi, [rsi]
-    call TryConvertStringToInteger
-    cmp r8, 0
-    je .End
-    mov rdx, qword [rdx]
-    add rdx, 6
 
-    call ClearBuffer
+    mov rcx, 3
+    mov r9, 0
+    .loop:
+        cmp r9, rcx
+        jge .OnLoopEnd
+        call ReadIntoBuffer
+        call TryConvertStringToInteger
+        cmp r8, 0
+        je .End
+        push rdx
+        xor rdx, rdx
+        call ClearBuffer
+        inc r9
+        jmp .loop
+    .OnLoopEnd:
+        pop rsi
+        pop rdi
+        pop rax
+
+    call Function
+
+    mov rax, buffer
+    mov rdi, BUFFER_LENGTH
+    mov rdx, r8
     call TryConvertNumberToString
+
     mov rdi, rsi
     call WriteToConsole
+    call ClearBuffer
     call PrintEndl
+
+    mov rdx, r9
+    call TryConvertNumberToString
+
+    mov rdi, rsi
+    call WriteToConsole
+    call ClearBuffer
+    call PrintEndl
+
+    mov rdx, r10
+    call TryConvertNumberToString
+
+    mov rdi, rsi
+    call WriteToConsole
+    call ClearBuffer
+    call PrintEndl
+
+
     .End:
+        pop r9
         pop r8
         pop rdx
         pop rsi
@@ -83,6 +126,114 @@ call WriteToConsole
 mov byte [rax], bl
 pop rbx
 pop rdi
+ret
+;<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+;<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+Function:
+; rax - a, rdi - b, rsi - x
+push rdx
+
+xor r8, r8
+xor r9, r9
+xor r10, r10
+
+cmp rsi,0
+jg .GreaterZero
+je .EqualZero
+
+push rax
+push rdi
+push rsi
+
+; rsi = x^2
+mov rax, rsi
+mov rdi, 2
+call Pow
+
+mov rdx, rsi
+
+pop rsi
+pop rdi
+pop rax
+; ----------------- res = x^2
+push rax
+push rcx
+
+mov rcx, rax
+mov rax, rdx
+imul rcx
+mov r8, rax
+
+pop rcx
+pop rax
+;----------------res = a*x^2
+
+push rax
+
+xor rdx, rdx
+mov rax, rdi
+
+imul rsi
+neg rax
+
+add r8, rax
+
+pop rax
+jmp .End
+
+.EqualZero:
+push rax
+
+    mov rax, rdi
+    add rax, rdi
+    mov r8, rax
+
+pop rax
+add r8, rax
+jmp .End
+.GreaterZero:
+    push rax
+    push rdi
+    push rsi
+
+    ; rsi = x^2
+    mov rax, rsi
+    mov rdi, 2
+    call Pow
+
+    mov rdx, rsi
+
+    pop rsi
+    pop rdi
+    pop rax
+    ; ----------------- res = x^2
+    push rax
+    push rcx
+
+    mov rcx, rax
+    mov rax, rdx
+    imul rcx
+    mov r8, rax
+
+    pop rcx
+    pop rax
+    ;----------------res = a*x^2
+    push rax
+
+    xor rdx, rdx
+    mov rax, rdi
+
+    idiv rsi
+
+    add r8, rax
+    mov r9, rdx
+    mov r10, rsi
+
+    pop rax
+    jmp .End
+
+.End
+pop rdx
 ret
 ;<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 ;<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -149,6 +300,8 @@ TryConvertNumberToString:
 ;   }
 ;       copy value to rbx
         mov rbx, rdx
+        cmp rbx, 0
+        je .zero
         .loop:
             cmp rbx, 0
             jle .ReadingNumbersFromStackToBuffer
@@ -173,7 +326,10 @@ TryConvertNumberToString:
             push r8
             inc rcx
             jmp .loop
-
+        jmp .ReadingNumbersFromStackToBuffer
+        .zero:
+            push 0
+            inc rcx
     .ReadingNumbersFromStackToBuffer:
 
         xor rbx, rbx
@@ -238,7 +394,7 @@ ReadIntoBuffer:
 ;   Params:
 ;       rax:    char*   buffer
 ;       rdi:    int     bufferLength
-;       rsi:    int*    inputtedLength
+;       rsi:    int&    inputtedLength
 ;   Returns:
 ;       void
     push rax
@@ -256,13 +412,8 @@ ReadIntoBuffer:
 
     call DoSystemCallNoModify
 
-    cmp rax, rdx
-    jle .End
-    mov rax, rdx
-
     .End:
-    mov rsi, r8
-    mov [rsi], rax
+    mov rsi, rax
 
     pop r8
     pop rdx
@@ -299,7 +450,7 @@ TryConvertStringToInteger:
 ;       rax:    char*   buffer
 ;       rdi:    int     bufferLength
 ;       rsi:    int     inputtedLength
-;       rdx:    int*    number
+;       rdx:    int&    number
 ;   Returns:
 ;        r8:    bool    if true, no error, else throwed error
 ;
@@ -311,7 +462,7 @@ TryConvertStringToInteger:
 
     xor r10, r10
     xor r9, r9
-    mov qword [rdx], 0
+    mov rdx, 0
     mov rcx, rsi
     xor rbx, rbx
     xor r8, r8
@@ -326,26 +477,9 @@ TryConvertStringToInteger:
         jl .NoError
 
         mov bl, byte [rax + r9]
-
-;       if(IsNeLineCharacter()) {
-;            break;
-;       }
         .IsNewLineCharacter:
             cmp bl, NEW_LINE_CHARACTER
             je .NoError
-
-;       if(sign=='-' || sign=='+') {
-;           if(index!=0) {
-;               return Error;
-;           }
-;           if(sign=='-') {
-;               *number *= -1;
-;           }
-;
-;           --rcx;
-;           ++r9;
-;           continue;
-;       }
         .CheckForSigns:
             .IsPlusCharacter:
                 cmp bl, PLUS_SIGH
@@ -387,9 +521,9 @@ TryConvertStringToInteger:
             call Pow
 
             imul rsi, rbx
-            mov rdi, qword [rdx]
+            mov rdi, rdx
             add rdi, rsi
-            mov qword [rdx], rdi
+            mov rdx, rdi
 
             pop rsi
             pop rdi
@@ -433,9 +567,9 @@ TryConvertStringToInteger:
         jne .GeneralNoError
         push rax
 
-        mov rax, qword [rdx]
+        mov rax, rdx
         neg rax
-        mov qword [rdx], rax
+        mov rdx, rax
 
         pop rax
         .GeneralNoError:

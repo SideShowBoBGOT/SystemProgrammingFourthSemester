@@ -6,10 +6,20 @@
 # It is included in the main 'build.ninja'.
 
 # =============================================================================
-# Project: lab3
+# Project: untitled
 # Configurations: Debug
 # =============================================================================
 # =============================================================================
+
+#############################################
+# Rule for compiling ASM_NASM files.
+
+rule ASM_NASM_COMPILER__lab3_Debug
+  depfile = $DEP_FILE
+  deps = gcc
+  command = /usr/bin/nasm $INCLUDES $FLAGS -MD $DEP_FILE -MT $out -f elf64 -o $out $in
+  description = Building ASM_NASM object $out
+
 
 #############################################
 # Rule for compiling C files.

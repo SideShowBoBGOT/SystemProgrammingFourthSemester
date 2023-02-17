@@ -1,7 +1,8 @@
 #include <stdio.h>
 
-int main()
-{
-    printf("Hello World!\n");
+extern void asm_main();
+
+int main() {
+    asm_main();
     return 0;
 }

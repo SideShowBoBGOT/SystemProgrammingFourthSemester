@@ -6,11 +6,10 @@
 			[
 				{
 					"build" : ".",
-					"hasInstallRule" : true,
-					"jsonFile" : "directory-.-Debug-9bbe28fb7bc6e9882331.json",
+					"jsonFile" : "directory-.-Debug-f5ebdc15457944623624.json",
 					"minimumCMakeVersion" : 
 					{
-						"string" : "3.5"
+						"string" : "3.24"
 					},
 					"projectIndex" : 0,
 					"source" : ".",
@@ -28,7 +27,7 @@
 					[
 						0
 					],
-					"name" : "lab3",
+					"name" : "untitled",
 					"targetIndexes" : 
 					[
 						0
@@ -40,7 +39,7 @@
 				{
 					"directoryIndex" : 0,
 					"id" : "lab3::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-lab3-Debug-ade225309845fbcba16b.json",
+					"jsonFile" : "target-lab3-Debug-d37d56aa3884737d86b9.json",
 					"name" : "lab3",
 					"projectIndex" : 0
 				}

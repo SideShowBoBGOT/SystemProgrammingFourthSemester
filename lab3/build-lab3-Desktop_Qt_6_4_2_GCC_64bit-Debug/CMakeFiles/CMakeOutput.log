@@ -207,3 +207,5 @@ Parsed C implicit link information from above output:
   implicit fwks: []
 
 
+Checking whether the ASM_NASM compiler is NASM using "-v" matched "(NASM version)":
+NASM version 2.16.01 compiled on Feb 14 2023
