@@ -19,7 +19,7 @@ error_sign_character_not_first_length           equ $-error_sign_character_not_f
 buffer:                     times BUFFER_LENGTH db  0
 inputtedLength:                                 dq  0
 section .text
-global asm_main.
+global asm_main
 asm_main:
     push rax
     push rdi
@@ -47,25 +47,24 @@ asm_main:
         pop rsi
         pop rdi
         pop rax
-    call Function
-    mov rax, buffer
-    mov rdi, BUFFER_LENGTH
-    mov rsi, r8
-    mov rdx, r9
-    mov r8, r10
-    mov r9, 10
-    call printFloat
-    call PrintEndl
-    .End:
-        pop r9
-        pop r8
-        pop rdx
-        pop rsi
-        pop rdi
-        pop rax
-        ret.
+        call Function
+        mov rax, buffer
+        mov rdi, BUFFER_LENGTH
+        mov rsi, r8
+        mov rdx, r9
+        mov r8, r10
+        mov r9, 10
+        call printFloat
+        call PrintEndl
+        .End:
+            pop r9
+            pop r8
+            pop rdx
+            pop rsi
+            pop rdi
+            pop rax
+            ret
 procABS:
-    ; rdi Abs(rax);
     mov rdi, rax
     cmp rdi, 0
     jge .Endd
@@ -117,7 +116,7 @@ printFloat:
     .End:
         pop rbx
         pop rcx
-ret.
+ret
 PrintEndl:
     push rdi
     push rbx
@@ -128,7 +127,7 @@ PrintEndl:
     mov byte [rax], bl
     pop rbx
     pop rdi
-    ret.
+    ret
 PrintPeriod:
     push rdi
     push rbx
@@ -139,7 +138,7 @@ PrintPeriod:
     mov byte [rax], bl
     pop rbx
     pop rdi
-    ret.
+    ret
 Function:
     push rdx
     xor r8, r8
@@ -189,12 +188,11 @@ Function:
         pop rdi
         pop rax
         pop rdx
-        ret.
+        ret
 FunctionCallAMulXSquared:
     push rax
     push rdi
     push rsi
-    ; rsi = x^2
     mov rax, rsi
     mov rdi, 2
     call Pow
@@ -210,7 +208,7 @@ FunctionCallAMulXSquared:
     mov r8, rax
     pop rcx
     pop rax
-    ret.
+    ret
 ClearBuffer:
 push rcx
 xor rcx, rcx
@@ -221,7 +219,7 @@ xor rcx, rcx
     jmp .loop
 .End:
 pop rcx
-ret.
+ret
 TryConvertNumberToString:
     pushf
     push rbx
@@ -230,7 +228,6 @@ TryConvertNumberToString:
     push r9
     xor r9, r9
     xor r8, r8
-    ;   counter = 0
     mov rcx, 0
     cmp rdx, 0
     jge .ReadingNumbersIntoStack
@@ -287,7 +284,7 @@ TryConvertNumberToString:
     pop rcx
     pop rbx
     popf
-    ret.
+    ret
 WriteToConsole:
 push rax
 push rdi
@@ -302,7 +299,7 @@ pop rdx
 pop rsi
 pop rdi
 pop rax
-ret.
+ret
 ReadIntoBuffer:
     push rax
     push rdi
@@ -320,7 +317,7 @@ ReadIntoBuffer:
     pop rdx
     pop rdi
     pop rax
-    ret.
+    ret
 DoSystemCallNoModify:
     pushf
     push rcx
@@ -329,7 +326,7 @@ DoSystemCallNoModify:
     pop r11
     pop rcx
     popf
-    ret.
+    ret
 TryConvertStringToInteger:
     pushf
     push rbx
@@ -393,7 +390,6 @@ TryConvertStringToInteger:
             pop rsi
             pop rdi
             pop rax
-        ;   whole_digit = digit*(10^counter)
         .OnIterationEnd:
         dec rcx
         inc r9
@@ -409,7 +405,6 @@ TryConvertStringToInteger:
         pop rax
         jmp .End
     .ErrorIncorrectSymbol
-        ;   print error message
         mov r8, 0
         push rax
         push rdi
@@ -436,7 +431,7 @@ TryConvertStringToInteger:
     pop rcx
     pop rbx
     popf
-    ret.
+    ret
 IsDigit:
     pushf
     cmp al, DIGIT_ZERO
@@ -452,7 +447,7 @@ IsDigit:
         jmp .End
     .End:
     popf
-    ret.
+    ret
 Pow:
 pushf
 push rcx

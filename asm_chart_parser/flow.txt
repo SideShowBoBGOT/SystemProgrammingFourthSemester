@@ -1,0 +1,88 @@
+st0=>start: start asm_main
+op1=>operation: push rax
+op2=>operation: push rdi
+op3=>operation: push rsi
+op4=>operation: push rdx
+op5=>operation: push r8
+op6=>operation: push r9
+op7=>operation: mov rax, buffer
+op8=>operation: mov rdi, BUFFER_LENGTH
+op9=>operation: mov rcx, 3
+op10=>operation: mov r9, 0
+op11=>operation: .loop
+op12=>operation: cmp r9, rcx
+op13=>operation: jge .OnLoopEnd
+sub14=>subroutine: call ReadIntoBuffer
+sub15=>subroutine: call TryConvertStringToInteger
+op16=>operation: cmp r8, 0
+op17=>operation: je .End
+op18=>operation: push rdx
+op19=>operation: xor rdx, rdx
+sub20=>subroutine: call ClearBuffer
+op21=>operation: inc r9
+op22=>operation: jmp .loop
+op23=>operation: .OnLoopEnd
+op24=>operation: pop rsi
+op25=>operation: pop rdi
+op26=>operation: pop rax
+sub27=>subroutine: call Function
+op28=>operation: mov rax, buffer
+op29=>operation: mov rdi, BUFFER_LENGTH
+op30=>operation: mov rsi, r8
+op31=>operation: mov rdx, r9
+op32=>operation: mov r8, r10
+op33=>operation: mov r9, 10
+sub34=>subroutine: call printFloat
+sub35=>subroutine: call PrintEndl
+op36=>operation: .End
+op37=>operation: pop r9
+op38=>operation: pop r8
+op39=>operation: pop rdx
+op40=>operation: pop rsi
+op41=>operation: pop rdi
+op42=>operation: pop rax
+op43=>operation: ret
+
+st0->op1
+op1->op2
+op2->op3
+op3->op4
+op4->op5
+op5->op6
+op6->op7
+op7->op8
+op8->op9
+op9->op10
+op10->op11
+op11->op12
+op12->op13
+op13->sub14
+sub14->sub15
+sub15->op16
+op16->op17
+op17->op18
+op18->op19
+op19->sub20
+sub20->op21
+op21->op22
+op22->op23
+op23->op24
+op24->op25
+op25->op26
+op26->sub27
+sub27->op28
+op28->op29
+op29->op30
+op30->op31
+op31->op32
+op32->op33
+op33->sub34
+sub34->sub35
+sub35->op36
+op36->op37
+op37->op38
+op38->op39
+op39->op40
+op40->op41
+op41->op42
+op42->op43
