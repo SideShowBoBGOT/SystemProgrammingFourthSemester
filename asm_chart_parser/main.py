@@ -70,7 +70,7 @@ def parse_asm(lab: str):
 
 
 def main():
-    parse_asm('lab3')
+    parse_asm('lab2')
 
 
 if __name__ == '__main__':
