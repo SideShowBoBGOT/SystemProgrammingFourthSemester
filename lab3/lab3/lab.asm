@@ -14,6 +14,7 @@ NULL_TERMINATOR     equ 0
 NEW_LINE_CHARACTER  equ 10
 PLUS_SIGH           equ 43
 MINUS_SIGN          equ 45
+PERIOD              equ 46
 DIGIT_ZERO          equ 48
 DIGIT_NINE          equ 57
 
@@ -72,30 +73,16 @@ asm_main:
 
     call Function
 
+
+
     mov rax, buffer
     mov rdi, BUFFER_LENGTH
-    mov rdx, r8
-    call TryConvertNumberToString
 
-    mov rdi, rsi
-    call WriteToConsole
-    call ClearBuffer
-    call PrintEndl
-
+    mov rsi, r8
     mov rdx, r9
-    call TryConvertNumberToString
+    mov r8, r10
 
-    mov rdi, rsi
-    call WriteToConsole
-    call ClearBuffer
-    call PrintEndl
-
-    mov rdx, r10
-    call TryConvertNumberToString
-
-    mov rdi, rsi
-    call WriteToConsole
-    call ClearBuffer
+    call printFloat
     call PrintEndl
 
 
@@ -107,6 +94,95 @@ asm_main:
         pop rdi
         pop rax
         ret
+printFloat:
+;      Function printing float;
+;      bool TryConvertNumberToString(char* buffer, int bufferLength, int whole, int numerator, int denominator, int precision);
+;      Params:
+;          rax:     char*   buffer
+;          rdi:     int     bufferLength
+;          rsi:     int     whole
+;          rdx:     int     numerator
+;          r8:     int     denominator
+;          r9:      int     precision
+;      Returns:
+;           void
+; print whole
+;int resultWhole = numerator / denominator;
+;  int resultFractional = numerator % denominator;
+
+;  if (0 < precision) {
+;    cout << resultWhole << '.';
+
+;    for (int i = 0; i < precision; ++i)
+;    {
+;      int num = resultFractional * 10;
+;      resultWhole = num / denominator;
+;      resultFractional = num % denominator;
+;      cout << resultWhole;
+;    }
+;  }
+
+    push rcx
+    push rbx
+
+        push rsi
+        push rdx
+
+            mov rdx, rsi
+            call TryConvertNumberToString
+            mov rdi, rsi
+            call WriteToConsole
+            call ClearBuffer
+
+        pop rdx
+        pop rsi
+
+    cmp rdx, 0
+    je .End
+
+    call PrintPeriod
+
+    xor rcx, rcx
+    mov rbx, rdx
+
+    .loop:
+        cmp rcx, r9
+        jge .End
+
+        push rax
+            mov rax, rbx
+            mov rbx, 10
+            imul rbx
+            mov rbx, rax
+        pop rax
+
+
+        push rdx
+        push rsi
+
+            push rax
+                mov rax, rbx
+                idiv r8
+                mov rbx, rdx
+                mov rdx, rax
+            pop rax
+
+            call TryConvertNumberToString
+            mov rdi, rsi
+            call WriteToConsole
+            call ClearBuffer
+
+        pop rsi
+        pop rdx
+        inc rcx
+        jmp .loop
+
+    .End:
+        pop rbx
+        pop rcx
+ret
+;<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+;<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 PrintEndl:
 ;   Function printing enl
 ;   void PrintEndl(char* const buffer);
@@ -114,84 +190,100 @@ PrintEndl:
 ;       rax:    char*   buffer
 ;   Returns:
 ;       void
-push rdi
-push rbx
-mov bl, byte [rax]
+    push rdi
+    push rbx
+    mov bl, byte [rax]
 
-mov byte [rax], NEW_LINE_CHARACTER
-mov rdi, 1
+    mov byte [rax], NEW_LINE_CHARACTER
+    mov rdi, 1
 
-call WriteToConsole
+    call WriteToConsole
 
-mov byte [rax], bl
-pop rbx
-pop rdi
-ret
+    mov byte [rax], bl
+    pop rbx
+    pop rdi
+    ret
+;<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+;<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+PrintPeriod:
+;   Function printing enl
+;   void PrintEndl(char* const buffer);
+;   Params:
+;       rax:    char*   buffer
+;   Returns:
+;       void
+    push rdi
+    push rbx
+    mov bl, byte [rax]
+
+    mov byte [rax], PERIOD
+    mov rdi, 1
+
+    call WriteToConsole
+
+    mov byte [rax], bl
+    pop rbx
+    pop rdi
+    ret
 ;<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 ;<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 Function:
 ; rax - a, rdi - b, rsi - x
-push rdx
+    push rdx
 
-xor r8, r8
-xor r9, r9
-xor r10, r10
+    xor r8, r8
+    xor r9, r9
+    xor r10, r10
 
-cmp rsi,0
-jg .GreaterZero
-je .EqualZero
+    cmp rsi,0
+    jg .GreaterZero
+    je .EqualZero
+        call FunctionCallAMulXSquared
+        push rax
 
-push rax
-push rdi
-push rsi
+        xor rdx, rdx
+        mov rax, rdi
 
-; rsi = x^2
-mov rax, rsi
-mov rdi, 2
-call Pow
+        imul rsi
+        neg rax
 
-mov rdx, rsi
+        add r8, rax
 
-pop rsi
-pop rdi
-pop rax
-; ----------------- res = x^2
-push rax
-push rcx
+        pop rax
+        jmp .End
 
-mov rcx, rax
-mov rax, rdx
-imul rcx
-mov r8, rax
+    .EqualZero:
+        push rax
 
-pop rcx
-pop rax
-;----------------res = a*x^2
+            mov rax, rdi
+            add rax, rdi
+            mov r8, rax
 
-push rax
+        pop rax
+        add r8, rax
+        jmp .End
+    .GreaterZero:
+        call FunctionCallAMulXSquared
+        push rax
 
-xor rdx, rdx
-mov rax, rdi
+        xor rdx, rdx
+        mov rax, rdi
 
-imul rsi
-neg rax
+        idiv rsi
 
-add r8, rax
+        add r8, rax
+        mov r9, rdx
+        mov r10, rsi
 
-pop rax
-jmp .End
+        pop rax
+        jmp .End
 
-.EqualZero:
-push rax
-
-    mov rax, rdi
-    add rax, rdi
-    mov r8, rax
-
-pop rax
-add r8, rax
-jmp .End
-.GreaterZero:
+    .End:
+        pop rdx
+        ret
+;<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+;<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+FunctionCallAMulXSquared:
     push rax
     push rdi
     push rsi
@@ -206,7 +298,7 @@ jmp .End
     pop rsi
     pop rdi
     pop rax
-    ; ----------------- res = x^2
+
     push rax
     push rcx
 
@@ -217,24 +309,7 @@ jmp .End
 
     pop rcx
     pop rax
-    ;----------------res = a*x^2
-    push rax
-
-    xor rdx, rdx
-    mov rax, rdi
-
-    idiv rsi
-
-    add r8, rax
-    mov r9, rdx
-    mov r10, rsi
-
-    pop rax
-    jmp .End
-
-.End
-pop rdx
-ret
+    ret
 ;<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 ;<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 ClearBuffer:
