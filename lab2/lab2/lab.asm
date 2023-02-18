@@ -50,7 +50,7 @@ asm_main:
     cmp r8, 0
     je .End
     mov rdx, qword [rdx]
-    add rdx, 6
+    sub rdx, 34
 
     call ClearBuffer
     call TryConvertNumberToString
@@ -64,6 +64,8 @@ asm_main:
         pop rdi
         pop rax
         ret
+;<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+;<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 PrintEndl:
 ;   Function printing enl
 ;   void PrintEndl(char* const buffer);
@@ -501,17 +503,3 @@ xor rcx, rcx
 pop rcx
 popf
 ret
-
-
-
-
-
-
-
-
-
-
-
-
-
-
