@@ -81,6 +81,7 @@ asm_main:
     mov rsi, r8
     mov rdx, r9
     mov r8, r10
+    mov r9, 10
 
     call printFloat
     call PrintEndl
@@ -94,6 +95,17 @@ asm_main:
         pop rdi
         pop rax
         ret
+
+;<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+;<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+procABS:
+    ; rdi Abs(rax);
+    mov rdi, rax
+    cmp rdi, 0
+    jge .Endd
+    neg rdi
+    .Endd:
+    ret
 printFloat:
 ;      Function printing float;
 ;      bool TryConvertNumberToString(char* buffer, int bufferLength, int whole, int numerator, int denominator, int precision);
@@ -268,7 +280,8 @@ Function:
 
         xor rdx, rdx
         mov rax, rdi
-
+;       https://stackoverflow.com/questions/51717317/dividing-with-a-negative-number-gives-me-an-overflow-in-nasm
+        cqo
         idiv rsi
 
         add r8, rax
@@ -279,6 +292,20 @@ Function:
         jmp .End
 
     .End:
+        push rax
+        push rdi
+
+            mov rax, r9
+            call procABS
+            mov r9, rdi
+
+            mov rax, r10
+            call procABS
+            mov r10, rdi
+
+        pop rdi
+        pop rax
+
         pop rdx
         ret
 ;<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
