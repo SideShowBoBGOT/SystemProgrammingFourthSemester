@@ -17,8 +17,12 @@ MINUS_SIGN          equ 45
 DIGIT_ZERO          equ 48
 DIGIT_NINE          equ 57
 
+N_LETTER            equ 110
+Y_LETTER            equ 121
+
 ;   Other constants
-BUFFER_LENGTH   equ 10
+BUFFER_LENGTH   equ 20
+MAX_LENGTH   equ 10
 
 
 section .data
@@ -27,6 +31,13 @@ error_incorrect_symbol:                         db  "Incorrect symbol in input",
 error_incorrect_symbol_length:                  equ $-error_incorrect_symbol
 error_sign_character_not_first                  db  "Sign characters must be first", NEW_LINE_CHARACTER, 0
 error_sign_character_not_first_length           equ $-error_sign_character_not_first
+
+max_length_error db "Max length is 10", NEW_LINE_CHARACTER, 0
+max_length_error_length equ $-max_length_error
+
+error_overflow                  db  "Overflow", NEW_LINE_CHARACTER, 0
+error_overflow_length           equ $-error_sign_character_not_first
+
 ;   Buffers
 buffer:                     times BUFFER_LENGTH db  0
 inputtedLength:                                 dq  0
@@ -42,21 +53,41 @@ asm_main:
     push rdx
     push r8
 
-    mov rax, buffer
-    mov rdi, BUFFER_LENGTH
-    call ReadIntoBuffer
-    mov rsi, [rsi]
-    call TryConvertStringToInteger
-    cmp r8, 0
-    je .End
-    mov rdx, qword [rdx]
-    sub rdx, 34
 
-    call ClearBuffer
-    call TryConvertNumberToString
-    mov rdi, rsi
-    call WriteToConsole
-    call PrintEndl
+    .loop:
+        xor rdx, rdx
+        mov rax, buffer
+        mov rdi, BUFFER_LENGTH
+        mov rsi, inputtedLength
+        call ReadIntoBuffer
+        mov rsi, [rsi]
+        call TryConvertStringToInteger
+        cmp r8, 0
+        je .End
+        sub rdx, 34
+
+        call ClearBuffer
+        call TryConvertNumberToString
+        mov rdi, rsi
+        call WriteToConsole
+        call PrintEndl
+
+        mov rax, buffer
+        mov rdi, BUFFER_LENGTH
+        call ClearBuffer
+
+        mov rsi, inputtedLength
+        call ReadIntoBuffer
+
+        xor rbx, rbx
+        mov bl, byte [rax]
+
+        cmp bl, Y_LETTER
+        jne .End
+
+        jmp .loop
+
+
     .End:
         pop r8
         pop rdx
@@ -248,21 +279,28 @@ ReadIntoBuffer:
     push rdx
     push r8
 
+    mov qword [rsi], 0
+
     mov r8, rsi
 
+    .loop:
+        mov rsi, rax
+        mov rdx, rdi
+        mov rax, SYS_READ
+        mov rdi, STDIN
 
-    mov rsi, rax
-    mov rdx, rdi
-    mov rax, SYS_READ
-    mov rdi, STDIN
+        call DoSystemCallNoModify
 
-    call DoSystemCallNoModify
+        cmp rax, MAX_LENGTH
+        jle .NoError
 
-    cmp rax, rdx
-    jle .End
-    mov rax, rdx
 
-    .End:
+        mov rax, max_length_error
+        mov rdi, max_length_error_length
+        call WriteToConsole
+        jmp .loop
+
+    .NoError:
     mov rsi, r8
     mov [rsi], rax
 
@@ -301,7 +339,7 @@ TryConvertStringToInteger:
 ;       rax:    char*   buffer
 ;       rdi:    int     bufferLength
 ;       rsi:    int     inputtedLength
-;       rdx:    int*    number
+;       rdx:    int&    number
 ;   Returns:
 ;        r8:    bool    if true, no error, else throwed error
 ;
@@ -313,7 +351,7 @@ TryConvertStringToInteger:
 
     xor r10, r10
     xor r9, r9
-    mov qword [rdx], 0
+    mov rdx, 0
     mov rcx, rsi
     xor rbx, rbx
     xor r8, r8
@@ -389,9 +427,9 @@ TryConvertStringToInteger:
             call Pow
 
             imul rsi, rbx
-            mov rdi, qword [rdx]
+            mov rdi, rdx
             add rdi, rsi
-            mov qword [rdx], rdi
+            mov rdx, rdi
 
             pop rsi
             pop rdi
@@ -435,9 +473,8 @@ TryConvertStringToInteger:
         jne .GeneralNoError
         push rax
 
-        mov rax, qword [rdx]
         neg rax
-        mov qword [rdx], rax
+        mov rdx, rax
 
         pop rax
         .GeneralNoError:
