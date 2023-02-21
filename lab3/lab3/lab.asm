@@ -25,6 +25,10 @@ MAX_LENGTH   equ 10
 N_LETTER            equ 110
 Y_LETTER            equ 121
 
+; Imported functions
+extern CFunction
+
+
 section .data
 ;   Errors
 error_incorrect_symbol:                         db  "Incorrect symbol in input", NEW_LINE_CHARACTER, 0
@@ -99,9 +103,17 @@ asm_main:
 
         .OnLoopEnd:
 
+            pop rdx
             pop rsi
             pop rdi
-            pop rax
+            xor rax, rax
+
+            call CFunction
+
+            mov rax, rdi
+            mov rdi, rsi
+            mov rsi, rdx
+
             call Function
             mov rax, buffer
             mov rdi, BUFFER_LENGTH
@@ -134,11 +146,11 @@ asm_main:
 
 
 
-                xor rbx, rbx
-                mov bl, byte [rax]
+        xor rbx, rbx
+        mov bl, byte [rax]
 
-                cmp bl, Y_LETTER
-                jne .End
+        cmp bl, Y_LETTER
+        jne .End
 
         jmp .loop
 
@@ -376,7 +388,8 @@ Function:
             jmp .SetSign
     .SetSign:
         cmp r8, 0
-        jge .SetSignNegative
+        jl .SetSignNegative
+                mov r11, 1 ; Sign
                 jmp .End
             .SetSignNegative:
                 mov r11, -1
@@ -421,8 +434,10 @@ Function:
 
         ; POP NUMERATOR COMPARE RESULT FLAG FROM STACK
         popf
-        jge .NumeratorPositive
+        jg .NumeratorPositive
+            jl .NumeratorNegative
 
+                jmp .localEnd
             .NumeratorNegative:
 
                 cmp r8, 0
@@ -465,7 +480,7 @@ Function:
 
                         pop rbx
 
-                        mov r11, 1
+                        mov r11, -1
                         jmp .localEnd
 
 
