@@ -54,7 +54,8 @@
 			"language" : "ASM_NASM",
 			"sourceIndexes" : 
 			[
-				1
+				1,
+				2
 			]
 		}
 	],
@@ -94,7 +95,8 @@
 			"name" : "",
 			"sourceIndexes" : 
 			[
-				1
+				1,
+				2
 			]
 		}
 	],
@@ -109,7 +111,13 @@
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 1,
-			"path" : "lab.asm",
+			"path" : "labFirst.asm",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "labSecond.asm",
 			"sourceGroupIndex" : 1
 		}
 	],

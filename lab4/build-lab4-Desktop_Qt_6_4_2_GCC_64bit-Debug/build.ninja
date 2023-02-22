@@ -55,8 +55,14 @@ build CMakeFiles/lab4.dir/main.c.o: C_COMPILER__lab4_Debug /home/choleraplague/u
   OBJECT_DIR = CMakeFiles/lab4.dir
   OBJECT_FILE_DIR = CMakeFiles/lab4.dir
 
-build CMakeFiles/lab4.dir/lab.asm.o: ASM_NASM_COMPILER__lab4_Debug /home/choleraplague/university/SystemProgrammingSoftware/labs/lab4/lab4/lab.asm || cmake_object_order_depends_target_lab4
-  DEP_FILE = CMakeFiles/lab4.dir/lab.asm.o.d
+build CMakeFiles/lab4.dir/labFirst.asm.o: ASM_NASM_COMPILER__lab4_Debug /home/choleraplague/university/SystemProgrammingSoftware/labs/lab4/lab4/labFirst.asm || cmake_object_order_depends_target_lab4
+  DEP_FILE = CMakeFiles/lab4.dir/labFirst.asm.o.d
+  FLAGS = -g -F dwarf
+  OBJECT_DIR = CMakeFiles/lab4.dir
+  OBJECT_FILE_DIR = CMakeFiles/lab4.dir
+
+build CMakeFiles/lab4.dir/labSecond.asm.o: ASM_NASM_COMPILER__lab4_Debug /home/choleraplague/university/SystemProgrammingSoftware/labs/lab4/lab4/labSecond.asm || cmake_object_order_depends_target_lab4
+  DEP_FILE = CMakeFiles/lab4.dir/labSecond.asm.o.d
   FLAGS = -g -F dwarf
   OBJECT_DIR = CMakeFiles/lab4.dir
   OBJECT_FILE_DIR = CMakeFiles/lab4.dir
@@ -69,7 +75,7 @@ build CMakeFiles/lab4.dir/lab.asm.o: ASM_NASM_COMPILER__lab4_Debug /home/cholera
 #############################################
 # Link the executable lab4
 
-build lab4: C_EXECUTABLE_LINKER__lab4_Debug CMakeFiles/lab4.dir/main.c.o CMakeFiles/lab4.dir/lab.asm.o
+build lab4: C_EXECUTABLE_LINKER__lab4_Debug CMakeFiles/lab4.dir/main.c.o CMakeFiles/lab4.dir/labFirst.asm.o CMakeFiles/lab4.dir/labSecond.asm.o
   FLAGS = -g
   OBJECT_DIR = CMakeFiles/lab4.dir
   POST_BUILD = :

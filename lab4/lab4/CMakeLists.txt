@@ -12,5 +12,5 @@ set(CMAKE_ASM_NASM_LINK_EXECUTABLE "ld <CMAKE_ASM_NASM_LINK_FLAGS> <LINK_FLAGS> 
 set(CMAKE_ASM_NASM_COMPILE_OBJECT "<CMAKE_ASM_NASM_COMPILER> <INCLUDES> \
 <FLAGS> -f ${CMAKE_ASM_NASM_OBJECT_FORMAT} -o <OBJECT> <SOURCE>")
 
-add_executable(lab4 main.c lab.asm)
+add_executable(lab4 main.c labFirst.asm labSecond.asm)
 set_target_properties(lab4 PROPERTIES NASM_OBJ_FORMAT elf64)

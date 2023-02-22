@@ -49,146 +49,41 @@ int Char_IsDigit(char* self) {
     return result;
 }
 
+extern void asm_main();
 
-struct Allocator {
-    unsigned capacity;
-    void* buffer;
-    unsigned typeSize;
-};
-
-Allocator Allocator_Default(unsigned capacity, unsigned typeSize) {
-    struct Allocator self = {.capacity=capacity, .buffer=0, .typeSize=typeSize};
-
-    return self;
-}
-void* Allocator_At(Allocator* self, unsigned index) {
-    return self->buffer + index * self->type_size;
-}
-
-void Allocator_Drop(Allocator* self) {
-
-}
-
-// string impl
-struct String {
-    int capacity;
-    char* buffer;
-};
-String String_Default() {
-    struct String str = {.capacity=0, .buffer=0};
-    return str;
-}
-int String_Read(String* self) {
-    return read(STDIN, self->buffer, self->capacity * sizeof(char));
-}
-int String_Write(String* const self) {
-    return write(STDOUT, self->buffer, self->capacity * sizeof(char));
-}
-int String_GetLength(String* const self) {
-    int index = 0;
-    while(1) {
-        if(self->buffer[index] == NULL_CHARACTER) break;
-        ++index;
-    }
-    return index;
-}
-int String_ToInteger(String* const self, int* number) {
-    int resultNumber = 0;
-    int result = 0;
-    int len = String_GetLength(self);
-    if(len == 0) return result;
-
-    char symbol = 0;
-    int index = 0;
-
-    int degreeIndex = len;
-    --degreeIndex;
-
-    int addDegreed = 0;
-
-    int isNegative = 0;
-
-    if(self->buffer[0] == PLUS_SIGN) {
-        ++index;
-        --degreeIndex;
-    }
-    if(self->buffer[0] == HYPHEN) {
-        ++index;
-        --degreeIndex;
-        isNegative = 1;
-    }
-    while(1) {
-        symbol = self->buffer[index];
-        if(symbol == LINE_FEED) break;
-        if(symbol == NULL_CHARACTER) break;
-        if(!Char_IsDigit(&symbol)) {
-            result = 1;
-            break;
-        }
-        if(index >= len) break;
-        addDegreed = Pow(10, degreeIndex);
-        char digit = symbol - DIGIT_ZERO;
-        addDegreed *= digit;
-        resultNumber += addDegreed;
-        ++index;
-        --degreeIndex;
-    }
-    if(isNegative == 1) {
-        int positive = resultNumber;
-        resultNumber = -positive;
-    }
-    return result;
-}
-void String_Clear(String* self) {
-    int index = 0;
-    while(1) {
-        if(index >= self->capacity) break;
-        self->buffer[i] = 0;
-        ++index;
-    }
-}
-void String_Drop(String* self) {
-
-}
-
-int OnSetSizeOfOneDArray(int* arr, int* sizeOneD) {
-
-}
-
-int SetSizeOfOneDArray(char* buffer, int bufferSize, int* arr, int* sizeOneD) {
-    int resultCode = String_Read(buffer, bufferSize * sizeof(char));
-    if(!result) {
-        result = String_ToInteger(buffer, sizeOneD);
-        if(!result) {
-
-        }
-    }
-    OnReturnClearBuffer(buffer, bufferSize, resultCode);
-}
-
-int EnterElementsOfOneDArray(char* buffer, int bufferSize, int* arr, int arrSize) {
-    int index = 0;
-    while(1) {
-        if(index >= arrSize) break;
-        if(!String_Read(buffer, bufferSize)) return 0;
-
-
-        ++index;
-    }
-}
 
 int main() {
-    int sizeOfOneDArray = 0;
-    int* oneDArray = 0;
-
-    int** twoDArray = 0;
-    int cols = 0;
-    int rows = 0;
-
-
-
-    SetSizeOfOneDArray(s_sInputBuffer, INPUT_BUFFER_SIZE, &sizeOfOneDArray);
+    //asm_main();
+    int arr[] = {9, 8, 7, 6, 5, 4, 3, 2, 1, 0};
+    for(int i=0;i<10;++i) {
+        for(int j=i;j<10;++j) {
+            if(arr[i] > arr[j]) {
+                int temp = arr[j];
+                arr[j] = arr[i];
+                arr[i] = temp;
+            }
+        }
+    }
+    for(int i=0;i<10;++i) {
+        printf("%i ", arr[i]);
+    }
     return 0;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
