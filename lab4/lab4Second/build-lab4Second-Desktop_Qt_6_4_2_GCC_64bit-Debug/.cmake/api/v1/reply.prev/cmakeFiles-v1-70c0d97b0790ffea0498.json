@@ -1,0 +1,166 @@
+{
+	"inputs" : 
+	[
+		{
+			"path" : "CMakeLists.txt"
+		},
+		{
+			"isGenerated" : true,
+			"path" : "/home/choleraplague/university/SystemProgrammingSoftware/labs/lab4/lab4Second/build-lab4Second-Desktop_Qt_6_4_2_GCC_64bit-Debug/CMakeFiles/3.24.2/CMakeSystem.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/home/choleraplague/Qt/Tools/CMake/share/cmake-3.24/Modules/CMakeSystemSpecificInitialize.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/home/choleraplague/Qt/Tools/CMake/share/cmake-3.24/Modules/CMakeDetermineASM_NASMCompiler.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/home/choleraplague/Qt/Tools/CMake/share/cmake-3.24/Modules/CMakeDetermineASMCompiler.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/home/choleraplague/Qt/Tools/CMake/share/cmake-3.24/Modules/CMakeDetermineCompiler.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/home/choleraplague/Qt/Tools/CMake/share/cmake-3.24/Modules/CMakeDetermineCompilerId.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/home/choleraplague/Qt/Tools/CMake/share/cmake-3.24/Modules/CMakeCompilerIdDetection.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/home/choleraplague/Qt/Tools/CMake/share/cmake-3.24/Modules/CMakeFindBinUtils.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/home/choleraplague/Qt/Tools/CMake/share/cmake-3.24/Modules/CMakeASMCompiler.cmake.in"
+		},
+		{
+			"isGenerated" : true,
+			"path" : "/home/choleraplague/university/SystemProgrammingSoftware/labs/lab4/lab4Second/build-lab4Second-Desktop_Qt_6_4_2_GCC_64bit-Debug/CMakeFiles/3.24.2/CMakeASM_NASMCompiler.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/home/choleraplague/Qt/Tools/CMake/share/cmake-3.24/Modules/CMakeSystemSpecificInformation.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/home/choleraplague/Qt/Tools/CMake/share/cmake-3.24/Modules/CMakeGenericSystem.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/home/choleraplague/Qt/Tools/CMake/share/cmake-3.24/Modules/CMakeInitializeConfigs.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/home/choleraplague/Qt/Tools/CMake/share/cmake-3.24/Modules/Platform/Linux.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/home/choleraplague/Qt/Tools/CMake/share/cmake-3.24/Modules/Platform/UnixPaths.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/home/choleraplague/Qt/Tools/CMake/share/cmake-3.24/Modules/CMakeASM_NASMInformation.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/home/choleraplague/Qt/Tools/CMake/share/cmake-3.24/Modules/CMakeASMInformation.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/home/choleraplague/Qt/Tools/CMake/share/cmake-3.24/Modules/CMakeTestASM_NASMCompiler.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/home/choleraplague/Qt/Tools/CMake/share/cmake-3.24/Modules/CMakeTestASMCompiler.cmake"
+		},
+		{
+			"isGenerated" : true,
+			"path" : "/home/choleraplague/university/SystemProgrammingSoftware/labs/lab4/lab4Second/build-lab4Second-Desktop_Qt_6_4_2_GCC_64bit-Debug/CMakeFiles/3.24.2/CMakeCCompiler.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/home/choleraplague/Qt/Tools/CMake/share/cmake-3.24/Modules/CMakeCInformation.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/home/choleraplague/Qt/Tools/CMake/share/cmake-3.24/Modules/CMakeLanguageInformation.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/home/choleraplague/Qt/Tools/CMake/share/cmake-3.24/Modules/Compiler/GNU-C.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/home/choleraplague/Qt/Tools/CMake/share/cmake-3.24/Modules/Compiler/GNU.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/home/choleraplague/Qt/Tools/CMake/share/cmake-3.24/Modules/Compiler/CMakeCommonCompilerMacros.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/home/choleraplague/Qt/Tools/CMake/share/cmake-3.24/Modules/Platform/Linux-GNU-C.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/home/choleraplague/Qt/Tools/CMake/share/cmake-3.24/Modules/Platform/Linux-GNU.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/home/choleraplague/Qt/Tools/CMake/share/cmake-3.24/Modules/CMakeCommonLanguageInclude.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/home/choleraplague/Qt/Tools/CMake/share/cmake-3.24/Modules/CMakeASM_NASMInformation.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/home/choleraplague/Qt/Tools/CMake/share/cmake-3.24/Modules/CMakeASMInformation.cmake"
+		}
+	],
+	"kind" : "cmakeFiles",
+	"paths" : 
+	{
+		"build" : "/home/choleraplague/university/SystemProgrammingSoftware/labs/lab4/lab4Second/build-lab4Second-Desktop_Qt_6_4_2_GCC_64bit-Debug",
+		"source" : "/home/choleraplague/university/SystemProgrammingSoftware/labs/lab4/lab4Second/lab4Second"
+	},
+	"version" : 
+	{
+		"major" : 1,
+		"minor" : 0
+	}
+}

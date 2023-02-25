@@ -1,0 +1,61 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-.-Debug-8d24e181dadc8bd3786f.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "lab4First",
+					"targetIndexes" : 
+					[
+						0
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "lab4First::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-lab4First-Debug-945a07704c4f4d393c82.json",
+					"name" : "lab4First",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "/home/choleraplague/university/SystemProgrammingSoftware/labs/lab4/lab4First/build-lab4First-Desktop_Qt_6_4_2_GCC_64bit-Debug",
+		"source" : "/home/choleraplague/university/SystemProgrammingSoftware/labs/lab4/lab4First/lab4First"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 4
+	}
+}

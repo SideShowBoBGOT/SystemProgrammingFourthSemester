@@ -1,3 +1,0 @@
-/home/choleraplague/university/SystemProgrammingSoftware/labs/lab4/build-lab4-Desktop_Qt_6_4_2_GCC_64bit-Debug/CMakeFiles/lab4.dir
-/home/choleraplague/university/SystemProgrammingSoftware/labs/lab4/build-lab4-Desktop_Qt_6_4_2_GCC_64bit-Debug/CMakeFiles/edit_cache.dir
-/home/choleraplague/university/SystemProgrammingSoftware/labs/lab4/build-lab4-Desktop_Qt_6_4_2_GCC_64bit-Debug/CMakeFiles/rebuild_cache.dir
