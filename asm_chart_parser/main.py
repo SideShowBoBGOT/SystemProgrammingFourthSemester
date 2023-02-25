@@ -1,6 +1,9 @@
 import pyflowchart as pf
 import re
 import os
+from svglib.svglib import svg2rlg
+from reportlab.graphics import renderPDF
+from PyPDF2 import PdfMerger
 
 def parse_label(row: str, node_type):
     name = row.split(':')[0].lstrip().rstrip()
@@ -52,9 +55,15 @@ def parse_proc(proc: str):
     fc = pf.Flowchart(nodes[0][0])
     with open(f'{nodes[0][0].node_text}.flowchart', 'w') as file:
         file.write(fc.flowchart())
-    os.system(f'diagrams flowchart {nodes[0][0].node_text}.flowchart {nodes[0][0].node_text}.svg')
+    name = nodes[0][0].node_text
+    os.system(f'diagrams flowchart {name}.flowchart {name}.svg')
+    drawing = svg2rlg(f"{name}.svg")
+    renderPDF.drawToFile(drawing, f"{name}.pdf")
+
+
 
 def parse_asm(lab: str):
+    report_path = '../' + lab + '/report.pdf'
     text = open('../' + lab + '/' + lab + '/' + 'lab.asm', 'r').read()
     procedures = re.split(pattern=r";<+\n;<+", string=text)[1:]
     for i, proc in enumerate(procedures):
@@ -65,12 +74,21 @@ def parse_asm(lab: str):
     proc_nodes = []
     for proc in procedures:
         proc_nodes.append(parse_proc(proc))
+    diagrams = next(os.walk('.'), (None, None, []))[2]
+    diagrams = list(filter(lambda x: x.endswith('.pdf'), diagrams))
+    os.system(f'cp {report_path} report.pdf')
+    diagrams.insert(0, 'report.pdf')
+    pdf_merger = PdfMerger()
+    for file in diagrams:
+        pdf_merger.append(file)
+    pdf_merger.write('finalReport.pdf')
+    os.system(f'mv finalReport.pdf ../{lab}')
+    os.system('rm *.pdf')
     os.system('rm *.flowchart')
-    os.system(f'mv *.svg ../{lab}')
-
+    os.system('rm *.svg')
 
 def main():
-    parse_asm('lab2')
+    parse_asm('lab3')
 
 
 if __name__ == '__main__':
