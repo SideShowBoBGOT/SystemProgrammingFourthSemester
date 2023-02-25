@@ -19,6 +19,9 @@ PERIOD              equ 46
 DIGIT_ZERO          equ 48
 DIGIT_NINE          equ 57
 
+
+N_LETTER            equ 110
+Y_LETTER            equ 121
 ;   Other constants
 BUFFER_LENGTH   equ 20
 MAX_LENGTH   equ 10
@@ -34,6 +37,7 @@ section .data
     error_sign_character_not_first_length           equ $-error_sign_character_not_first
     max_length_error db "Max length is 10", NEW_LINE_CHARACTER, 0
     max_length_error_length equ $-max_length_error
+
     ;   Buffers
     buffer:                     times BUFFER_LENGTH db  0
     inputtedLength:                                 dq  0
@@ -46,139 +50,331 @@ section .data
     enterMatrixLength equ $-enterMatrix
     enterMatrixElement db "Enter Matrix element ", 0
     enterMatrixElementLength equ $-enterMatrixElement
+    findElement db "Do you want to find position of any element? y - yes, other - no", NEW_LINE_CHARACTER, 0
+    findElementLength equ $-findElement
+    enterFindElement db "Enter element: ", NEW_LINE_CHARACTER, 0
+    enterFindElementLength equ $-enterFindElement
+    positions db "Positions:", NEW_LINE_CHARACTER, 0
+    positionsLength equ $-positions
+    noPositionsFound db "No positions found", NEW_LINE_CHARACTER, 0
+    noPositionsFoundLength equ $-noPositionsFound
 ; !!!   SECTION TEXT    !!!
 section .text
+global asm_main
+;<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+;<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+asm_main:
+    push rax
+    push rdi
+    push rsi
+    push rdx
+    push rcx
+    push rbx
+    push r8
+    push r12
 
-    global asm_main
-    ;<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-    ;<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-    asm_main:
+    mov rax, buffer
+    mov rdi, BUFFER_LENGTH
+
+    .inputMatrixRows:
+        call PrintEnterMatrixRows
+        call InputArgumentPositive
+        push rsi
+    .inputMatrixCols:
+        call PrintEnterMatrixCols
+        call InputArgumentPositive
+        push rsi
+    .printEnterMatrix:
+        call PrintEnterMatrix
+    .inputMatrix:
+        ; number of columns
+        pop rdx
+        ; number of rows
+        pop rsi
+        ; inputted value
+        xor rbx, rbx
+        ; counter to zero
+        xor rcx, rcx
+        xor r8, r8
+        ; the beggining of the Matrix
+        mov r12, rsp
+        sub r12, 8
+        .loopAllocateMemoryRow:
+            cmp rcx, rsi
+            jge .onEndAllocateMemoryRow
+
+            .loopAllocateMemoryColumn:
+                cmp r8, rdx
+                jge .onEndAllocateMemoryColumn
+
+                call PrintEnterMatrixElement
+
+                .printRowNumber:
+                    push rdi
+                    push rsi
+                    push rdx
+
+                    mov rsi, rdi
+                    mov rdi, rax
+
+                    mov rdx, rcx
+                    call PrintInteger
+
+                    pop rdx
+                    pop rsi
+                    pop rdi
+
+                call PrintSpace
+
+                .printColNumber:
+                    push rdi
+                    push rsi
+                    push rdx
+
+                    mov rsi, rdi
+                    mov rdi, rax
+
+                    mov rdx, r8
+                    call PrintInteger
+
+                    pop rdx
+                    pop rsi
+                    pop rdi
+
+
+                call PrintEndl
+
+                push rsi
+                call InputArgument
+                mov rbx, rsi
+                pop rsi
+
+                push rbx
+
+                inc r8
+                jmp .loopAllocateMemoryColumn
+
+            .onEndAllocateMemoryColumn:
+                xor r8, r8
+                inc rcx
+                ; jump to the loop head
+                jmp .loopAllocateMemoryRow
+
+        .onEndAllocateMemoryRow:
+            xor rcx, rcx
+            xor r8, r8
+            xor rbx, rbx
+    ; rax - buffer, rdi - bufferLength, rsi - rows, rdx - cols,
+    ; rbx - 0, rcx - 0, r8 - 0, r12 - matrix
+    .callPrintMatrix:
         push rax
         push rdi
         push rsi
+        push rdx
+        push r8
+        push r9
 
-        mov rax, buffer
-        mov rdi, BUFFER_LENGTH
+        mov r9, rdx
+        mov r8, rsi
+        mov rdx, r12
+        mov rsi, rdi
+        mov rdi, rax
 
-        .inputMatrixRows:
-            call PrintEnterMatrixRows
-            call InputArgumentPositive
-            push rsi
-        .inputMatrixCols:
-            call PrintEnterMatrixCols
-            call InputArgumentPositive
-            push rsi
-        .printEnterMatrix:
-            call PrintEnterMatrix
-        .inputMatrix:
-            ; number of columns
-            pop rdx
-            ; number of rows
-            pop rsi
-            ; inputted value
-            xor rbx, rbx
-            ; counter to zero
-            xor rcx, rcx
-            xor r8, r8
-            ; the beggining of the Matrix
-            mov r12, rsp
-            sub r12, 8
-            .loopAllocateMemoryRow:
-                cmp rcx, rsi
-                jge .onEndLoopAllocateMemoryRow
+        call PrintMatrix
 
-                .loopAllocateMemoryColumn:
-                    cmp r8, rdx
-                    jge .onEndLoopAllocateMemoryColumn
-
-                    call PrintEnterMatrixElement
-
-                    .printRowNumber:
-                        push rdi
-                        push rsi
-                        push rdx
-
-                        mov rsi, rdi
-                        mov rdi, rax
-
-                        mov rdx, rcx
-                        call PrintInteger
-
-                        pop rdx
-                        pop rsi
-                        pop rdi
-
-                    call PrintSpace
-
-                    .printColNumber:
-                        push rdi
-                        push rsi
-                        push rdx
-
-                        mov rsi, rdi
-                        mov rdi, rax
-
-                        mov rdx, r8
-                        call PrintInteger
-
-                        pop rdx
-                        pop rsi
-                        pop rdi
-
-
-                    call PrintEndl
-
-                    push rsi
-                    call InputArgument
-                    mov rbx, rsi
-                    pop rsi
-
-                    push rbx
-
-                    inc r8
-                    jmp .loopAllocateMemoryColumn
-
-                .onEndLoopAllocateMemoryColumn:
-                    xor r8, r8
-                    inc rcx
-                    ; jump to the loop head
-                    jmp .loopAllocateMemoryRow
-
-            .onEndLoopAllocateMemoryRow:
-                xor rcx, rcx
-                xor r8, r8
-                xor rbx, rbx
-        ; rax - buffer, rdi - bufferLength, rsi - rows, rdx - cols,
-        ; rbx - 0, rcx - 0, r8 - 0, r12 - matrix
-        .callPrintMatrix:
-            push rax
-            push rdi
-            push rsi
-            push rdx
-            push r8
-            push r9
-
-            mov r9, rdx
-            mov r8, rsi
-            mov rdx, r12
-            mov rsi, rdi
-            mov rdi, rax
-
-            call PrintMatrix
-
-            pop r9
-            pop r8
-            pop rdx
-            pop rsi
-            pop rdi
-            pop rax
-
-
-
+        pop r9
+        pop r8
+        pop rdx
         pop rsi
         pop rdi
         pop rax
-        ret
+
+    mov r8, r12
+    call FindElementRoutine
+
+    .deAllocateMatrix:
+        xor rcx, rcx
+        xor r8, r8
+
+        .loopDeAllocateRow:
+            cmp rcx, rsi
+            jge .onEndDeAllocateRow
+
+            .loopDeAllocateColumn:
+                cmp r8, rdx
+                jge .onEndDeallocateColumn
+                pop rax
+                inc r8
+                jmp .loopDeAllocateColumn
+            .onEndDeallocateColumn:
+            xor r8, r8
+            inc rcx
+            jmp .loopDeAllocateRow
+
+        .onEndDeAllocateRow:
+
+    pop r12
+    pop r8
+    pop rbx
+    pop rcx
+    pop rdx
+    pop rsi
+    pop rdi
+    pop rax
+    ret
+;<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+;<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+PrintFindElement:
+push rax
+push rdi
+mov rax, findElement
+mov rdi, findElementLength
+call WriteToConsole
+pop rdi
+pop rax
+ret
+;<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+;<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+FindElementRoutine:
+; void (rax - buffer, rdi - bufferLength, rsi - rows, rdx - cols, r8 - matrix)
+push rbx
+push rcx
+push r9
+push r10
+push r12
+push r13
+push r14
+.loopRoutine:
+    call PrintFindElement
+    push rsi
+    call ReadIntoBuffer
+    pop rsi
+    xor rbx, rbx
+    mov bl, byte [rax]
+    cmp bl, Y_LETTER
+    jne .end
+
+    call ClearBuffer
+    call PrintEnterFindElement
+
+    push rsi
+    call InputArgument
+    mov rbx, rsi
+    pop rsi
+
+    call PrintPositions
+
+    mov r9, 8
+    mov r11, r8
+    xor r13, r13 ; is_any_found_flag
+    xor rcx, rcx
+    xor r10, r10
+    .loopFindPositionsRows:
+        cmp rcx, rsi
+        jge .onEndFindPositionsRows
+
+        .loopFindPositionsCols:
+            cmp r10, rdx
+            jge .onEndFindPositionsCols
+
+            mov r14, qword [r11]
+            cmp r14, rbx
+            jne .switchToNextElement
+
+                mov r13, 1
+
+                .printRowNumber:
+                    push rdi
+                    push rsi
+                    push rdx
+
+                    mov rsi, rdi
+                    mov rdi, rax
+
+                    mov rdx, rcx
+                    call PrintInteger
+
+                    pop rdx
+                    pop rsi
+                    pop rdi
+
+                call PrintSpace
+
+                .printColNumber:
+                    push rdi
+                    push rsi
+                    push rdx
+
+                    mov rsi, rdi
+                    mov rdi, rax
+
+                    mov rdx, r10
+                    call PrintInteger
+
+                    pop rdx
+                    pop rsi
+                    pop rdi
+
+                call PrintEndl
+
+            .switchToNextElement:
+                sub r11, r9
+                inc r10
+                jmp .loopFindPositionsCols
+
+        .onEndFindPositionsCols:
+            xor r10, r10
+            inc rcx
+            jmp .loopFindPositionsRows
+
+    .onEndFindPositionsRows
+    cmp r13, 1
+    je .onEndRoutine
+    call PrintNoPositionsFound
+    .onEndRoutine
+    jmp .loopRoutine
+.end:
+pop r14
+pop r13
+pop r12
+pop r10
+pop r9
+pop rcx
+pop rbx
+ret
+;<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+;<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+PrintNoPositionsFound:
+push rax
+push rdi
+mov rax, noPositionsFound
+mov rdi, noPositionsFoundLength
+call WriteToConsole
+pop rdi
+pop rax
+ret
+;<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+;<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+PrintPositions:
+push rax
+push rdi
+mov rax, positions
+mov rdi, positionsLength
+call WriteToConsole
+pop rdi
+pop rax
+ret
+;<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+;<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+PrintEnterFindElement:
+push rax
+push rdi
+mov rax, enterFindElement
+mov rdi, enterFindElementLength
+call WriteToConsole
+pop rdi
+pop rax
+ret
 ;<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 ;<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 PrintEnterMatrixElement:
