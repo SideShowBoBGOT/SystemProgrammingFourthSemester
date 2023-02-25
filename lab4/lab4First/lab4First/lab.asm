@@ -232,6 +232,35 @@ section .text
             call PrintInteger
             call PrintEndl
 
+        .printSum:
+            push rax
+            push rdi
+
+            mov rax, sumArray
+            mov rdi, sumArrayLength
+            call WriteToConsole
+
+            pop rdi
+            pop rax
+
+            push rdi
+            push rsi
+            push rax
+
+            mov rdi, r12
+            mov rsi, r8
+            mov rdx, 8
+            call ArraySum
+            mov rdx, rax
+
+            pop rax
+            pop rsi
+            pop rdi
+
+            call PrintInteger
+            call PrintEndl
+
+
         .deAddlocateArray:
             xor rcx, rcx
             .loop:
@@ -250,6 +279,44 @@ section .text
         pop rbx
         pop rax
         ret
+;<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+;<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+ArraySum:
+; rax - sum, rdi - array, rsi - arrayLength, rdx - typeSize
+push rcx
+push rbx
+push r8
+push r9
+
+xor rax, rax
+xor rcx, rcx
+
+; long int size
+mov rbx, 8
+
+; mov the array beginning to r8
+mov r8, rdi
+.loop:
+    cmp rcx, rsi
+    jge .end
+
+    mov r9, qword [r8]
+    add rax, r9
+
+    .switchToNextElement:
+    sub r8, rbx
+
+    inc rcx
+    jmp .loop
+
+.end:
+    pop r9
+    pop r8
+    pop rbx
+    pop rcx
+    ret
+
+
 ;<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 ;<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 SortArray:
