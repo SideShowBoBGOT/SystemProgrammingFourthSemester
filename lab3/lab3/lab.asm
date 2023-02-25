@@ -233,8 +233,8 @@ printFloat:
 ;    for (int i = 0; i < precision; ++i)
 ;    {
 ;      int num = resultFractional * 10;
-;      resultWhole = num / denominator;
-;      resultFractional = num % denominator;
+;      rbx resultWhole = num / denominator;
+;      rdx resultFractional = num % denominator;
 ;      cout << resultWhole;
 ;    }
 ;  }
@@ -257,24 +257,33 @@ printFloat:
         .loop:
             cmp rcx, r9
             jge .End
+
                 push rax
+
                 mov rax, rbx
                 mov rbx, 10
                 imul rbx
                 mov rbx, rax
+
                 pop rax
+
                 push rdx
                 push rsi
-                push rax
-                mov rax, rbx
-                idiv r8
-                mov rbx, rdx
-                mov rdx, rax
-                pop rax
+
+                    push rax
+
+                    mov rax, rbx
+                    idiv r8
+                    mov rbx, rdx
+                    mov rdx, rax
+
+                    pop rax
+
                 call TryConvertNumberToString
                 mov rdi, rsi
                 call WriteToConsole
                 call ClearBuffer
+
                 pop rsi
                 pop rdx
                 inc rcx
