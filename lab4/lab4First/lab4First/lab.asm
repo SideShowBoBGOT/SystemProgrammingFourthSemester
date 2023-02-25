@@ -232,6 +232,16 @@ section .text
             call PrintInteger
             call PrintEndl
 
+        .deAddlocateArray:
+            xor rcx, rcx
+            .loop:
+                cmp rcx, r8
+                jge .end
+                pop rax
+                inc rcx
+                jmp .loop
+            .end:
+
 
         pop r12
         pop rsi
@@ -240,7 +250,6 @@ section .text
         pop rbx
         pop rax
         ret
-
 ;<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 ;<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 SortArray:

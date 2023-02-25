@@ -71,8 +71,6 @@ section .text
         .printEnterMatrix:
             call PrintEnterMatrix
         .inputMatrix:
-            pop rdx ; cols
-            pop rsi ; rows
             ; number of columns
             pop rdx
             ; number of rows
@@ -90,6 +88,8 @@ section .text
                 jge .onEndLoopAllocateMemoryRow
 
                 .loopAllocateMemoryColumn:
+                    cmp r8, rdx
+                    jge .onEndLoopAllocateMemoryColumn
 
                     call PrintEnterMatrixElement
 
@@ -139,14 +139,40 @@ section .text
                     jmp .loopAllocateMemoryColumn
 
                 .onEndLoopAllocateMemoryColumn:
+                    xor r8, r8
                     inc rcx
                     ; jump to the loop head
-                    jmp .onloopAllocateMemoryRow
+                    jmp .loopAllocateMemoryRow
 
             .onEndLoopAllocateMemoryRow:
                 xor rcx, rcx
                 xor r8, r8
                 xor rbx, rbx
+        ; rax - buffer, rdi - bufferLength, rsi - rows, rdx - cols,
+        ; rbx - 0, rcx - 0, r8 - 0, r12 - matrix
+        .callPrintMatrix:
+            push rax
+            push rdi
+            push rsi
+            push rdx
+            push r8
+            push r9
+
+            mov r9, rdx
+            mov r8, rsi
+            mov rdx, r12
+            mov rsi, rdi
+            mov rdi, rax
+
+            call PrintMatrix
+
+            pop r9
+            pop r8
+            pop rdx
+            pop rsi
+            pop rdi
+            pop rax
+
 
 
         pop rsi
@@ -209,19 +235,15 @@ push r10
 xor rcx, rcx
 ; mov the Matrix beginning to r9
 mov r10, rdx
+
 .calcRowSize:
     ; long int size
     mov rbx, 8
-
     push rax
-
     mov rax, r9
     imul rbx
-
     mov rbx, rax
-
     pop rax
-
 
 .loop:
     cmp rcx, r8
