@@ -62,9 +62,12 @@ def parse_proc(proc: str):
 
 
 
-def parse_asm(lab: str):
+def parse_asm(lab: str, subs=''):
     report_path = '../' + lab + '/report.pdf'
-    text = open('../' + lab + '/' + lab + '/' + 'lab.asm', 'r').read()
+    if subs == '':
+        text = open('../' + lab + '/' + lab + '/' + 'lab.asm', 'r').read()
+    else:
+        text = open('../' + lab + '/' + subs + '/'+ subs + '/' + 'lab.asm', 'r').read()
     procedures = re.split(pattern=r";<+\n;<+", string=text)[1:]
     for i, proc in enumerate(procedures):
         rows = proc.split('\n')
@@ -88,7 +91,7 @@ def parse_asm(lab: str):
     os.system('rm *.svg')
 
 def main():
-    parse_asm('lab3')
+    parse_asm('lab4', 'lab4First')
 
 
 if __name__ == '__main__':
