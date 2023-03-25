@@ -34,6 +34,12 @@ error_incorrect_symbol_length:                  equ $-error_incorrect_symbol
 error_sign_character_not_first                  db  "Sign characters must be first", NEW_LINE_CHARACTER, 0
 error_sign_character_not_first_length           equ $-error_sign_character_not_first
 
+input_a_msg db "Input number:", NEW_LINE_CHARACTER, 0
+input_a_msg_length equ $-input_a_msg
+
+continue_msg db "Continue? y - yes, other - no:", NEW_LINE_CHARACTER, 0
+continue_msg_length equ $-continue_msg
+
 max_length_error db "Max length is 10", NEW_LINE_CHARACTER, 0
 max_length_error_length equ $-max_length_error
 
@@ -57,6 +63,11 @@ asm_main:
 
 
     .loop:
+
+        mov rax, input_a_msg
+        mov rdi, input_a_msg_length
+        call WriteToConsole
+
         xor rdx, rdx
         mov rax, buffer
         mov rdi, BUFFER_LENGTH
@@ -65,7 +76,7 @@ asm_main:
         mov rsi, [rsi]
         call TryConvertStringToInteger
         cmp r8, 0
-        je .End
+        je .Repeat
         sub rdx, 34
 
         call ClearBuffer
@@ -73,6 +84,11 @@ asm_main:
         mov rdi, rsi
         call WriteToConsole
         call PrintEndl
+
+        .Repeat:
+        mov rax, continue_msg
+        mov rdi, continue_msg_length
+        call WriteToConsole
 
         mov rax, buffer
         mov rdi, BUFFER_LENGTH
