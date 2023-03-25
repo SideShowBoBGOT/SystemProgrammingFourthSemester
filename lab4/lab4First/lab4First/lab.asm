@@ -4,10 +4,15 @@
 ;   https://filippo.io/linux-syscall-table/
 SYS_READ    equ 0
 SYS_WRITE   equ 1
+SYS_IOCTL   equ 16
 
 ;   Descriptors
 STDIN   equ 0
 STDOUT  equ 1
+
+ICANON:     equ     1<<1
+TCGETS:     equ     0x5401
+TCSETS      equ     0x5402
 
 ;   ASCII characters
 NULL_TERMINATOR     equ 0
@@ -517,6 +522,7 @@ InputArgument:
 
         call ReadIntoBuffer
         call TryConvertStringToInteger
+
         call ClearBuffer
         cmp r8, 0
         je .loop
@@ -779,6 +785,7 @@ ReadIntoBuffer:
     mov r8, rax
     mov r9, rdi
     mov rsi, 0
+
     .loop:
         mov rsi, r8
         mov rdx, r9
