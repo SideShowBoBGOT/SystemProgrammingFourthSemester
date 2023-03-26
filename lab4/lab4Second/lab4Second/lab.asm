@@ -77,6 +77,9 @@ asm_main:
     push r8
     push r12
 
+
+    .loopDD:
+
     mov rax, buffer
     mov rdi, BUFFER_LENGTH
 
@@ -216,6 +219,23 @@ asm_main:
             jmp .loopDeAllocateRow
 
         .onEndDeAllocateRow:
+
+    mov rax, continue_msg
+    mov rdi, continue_msg_length
+    call WriteToConsole
+
+    mov rax, buffer
+    mov rdi, BUFFER_LENGTH
+
+    call ReadIntoBuffer
+
+
+
+    xor rbx, rbx
+    mov bl, byte [rax]
+
+    cmp bl, Y_LETTER
+    je .loopDD
 
     pop r12
     pop r8
