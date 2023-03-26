@@ -35,6 +35,8 @@ section .data
     error_incorrect_symbol_length:                  equ $-error_incorrect_symbol
     error_sign_character_not_first                  db  "Sign characters must be first", NEW_LINE_CHARACTER, 0
     error_sign_character_not_first_length           equ $-error_sign_character_not_first
+    error_not_positive                  db  "Value is not positive", NEW_LINE_CHARACTER, 0
+    error_not_positive_length           equ $-error_not_positive
     max_length_error db "Max length is 10", NEW_LINE_CHARACTER, 0
     max_length_error_length equ $-max_length_error
 
@@ -58,6 +60,8 @@ section .data
     positionsLength equ $-positions
     noPositionsFound db "No positions found", NEW_LINE_CHARACTER, 0
     noPositionsFoundLength equ $-noPositionsFound
+    continue_msg db "Continue? y - yes, other - no:", NEW_LINE_CHARACTER, 0
+    continue_msg_length equ $-continue_msg
 ; !!!   SECTION TEXT    !!!
 section .text
 global asm_main
@@ -559,7 +563,16 @@ InputArgumentPositive:
 .loopWhileNegative:
     call InputArgument
     cmp rsi, 0
-    jl .loopWhileNegative
+    jg .End
+    push rax
+    push rdi
+    mov rax, error_not_positive
+    mov rdi, error_not_positive_length
+    call WriteToConsole
+    pop rdi
+    pop rax
+    jmp .loopWhileNegative
+.End:
 ret
 ;<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 ;<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<

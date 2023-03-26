@@ -23,6 +23,7 @@ MINUS_SIGN          equ 45
 PERIOD              equ 46
 DIGIT_ZERO          equ 48
 DIGIT_NINE          equ 57
+Y_LETTER            equ 121
 
 ;   Other constants
 BUFFER_LENGTH   equ 20
@@ -37,6 +38,8 @@ section .data
     error_incorrect_symbol_length:                  equ $-error_incorrect_symbol
     error_sign_character_not_first                  db  "Sign characters must be first", NEW_LINE_CHARACTER, 0
     error_sign_character_not_first_length           equ $-error_sign_character_not_first
+    error_not_positive                  db  "Value is not positive", NEW_LINE_CHARACTER, 0
+    error_not_positive_length           equ $-error_not_positive
     max_length_error db "Max length is 10", NEW_LINE_CHARACTER, 0
     max_length_error_length equ $-max_length_error
     ;   Buffers
@@ -57,7 +60,8 @@ section .data
     minArrayElementLength equ $-minArrayElement
     sortedArray db "Sorted array: ", NEW_LINE_CHARACTER, 0
     sortedArrayLength equ $-sortedArray
-
+    continue_msg db "Continue? y - yes, other - no:", NEW_LINE_CHARACTER, 0
+    continue_msg_length equ $-continue_msg
 ; !!!   SECTION TEXT    !!!
 section .text
 
@@ -72,6 +76,9 @@ section .text
         push rsi
         push r12
 
+    .loopDD:
+
+
         .inputArraySize:
             mov rax, enterArraySize
             mov rdi, enterArraySizeLength
@@ -80,10 +87,7 @@ section .text
             xor rsi, rsi
             mov rax, buffer
             mov rdi, BUFFER_LENGTH
-            .loopWhileNegative:
-                call InputArgument
-                cmp rsi, 0
-                jl .loopWhileNegative
+            call InputArgumentPositive
 
         ; rax - buffer, rdi - bufferLength, rsi - arraySize
         .allocMemoryOnStack:
@@ -276,6 +280,23 @@ section .text
                 jmp .loop
             .end:
 
+    mov rax, continue_msg
+    mov rdi, continue_msg_length
+    call WriteToConsole
+
+    mov rax, buffer
+    mov rdi, BUFFER_LENGTH
+
+    call ReadIntoBuffer
+
+
+
+    xor rbx, rbx
+    mov bl, byte [rax]
+
+    cmp bl, Y_LETTER
+    je .loopDD
+
 
         pop r12
         pop rsi
@@ -284,6 +305,24 @@ section .text
         pop rbx
         pop rax
         ret
+;<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+;<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+InputArgumentPositive:
+; void (rax-buffer, rdi-bufferLength, rsi- int&_out number)
+.loopWhileNegative:
+    call InputArgument
+    cmp rsi, 0
+    jg .End
+    push rax
+    push rdi
+    mov rax, error_not_positive
+    mov rdi, error_not_positive_length
+    call WriteToConsole
+    pop rdi
+    pop rax
+    jmp .loopWhileNegative
+.End:
+ret
 ;<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 ;<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 ArraySum:
